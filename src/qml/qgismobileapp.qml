@@ -1046,7 +1046,6 @@ ApplicationWindow {
 
       onLoadProjectEnded: {
         busyMessage.visible = false
-        openProjectDialog.folder = qgisProject.homePath
         mapCanvasBackground.color = mapCanvas.mapSettings.backgroundColor
       }
     }
@@ -1194,21 +1193,6 @@ ApplicationWindow {
     }
 
     Component.onCompleted: focusstack.addFocusTaker( this )
-  }
-
-  FileDialog {
-    id: openProjectDialog
-    title: qsTr( "Open project" )
-    visible: false
-    nameFilters: [ qsTr( "QGIS projects (*.qgs *.qgz)" ), qsTr( "All files (*)" ) ]
-
-    width: parent.width
-    height: parent.height
-
-    onAccepted: {
-        iface.loadProject( openProjectDialog.fileUrl.toString().slice(7) )
-      mainWindow.keyHandler.focus=true
-    }
   }
 
   PositioningSettings {
