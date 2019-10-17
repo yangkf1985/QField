@@ -215,10 +215,6 @@ ApplicationWindow {
           currentCoordinate: coordinateLocator.currentCoordinate
           vectorLayer: dashBoard.currentLayer
           crs: mapCanvas.mapSettings.destinationCrs
-
-          onCurrentCoordinateChanged: {
-              console.info( currentCoordinate.x+', '+currentCoordinate.y+', '+currentCoordinate.z )
-          }
         }
 
         anchors.fill: parent
