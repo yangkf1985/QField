@@ -8,6 +8,10 @@ rvm:
 git:
   submodules: false
 
+cache:
+  directories:
+    - ${HOME}/.gradle
+
 services:
   - docker
 

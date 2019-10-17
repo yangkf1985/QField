@@ -13,4 +13,4 @@ else
   PKG_NAME="qfield_beta"
   APP_ICON="qfield-testlogo.svg"
 fi
-docker run -v $(pwd):/usr/src/qfield -e "BUILD_FOLDER=build-${ARCH}" -e ARCH -e STOREPASS -e KEYNAME -e KEYPASS -e "VERSION=${TRAVIS_TAG}" -e PKG_NAME -e APP_NAME -e APP_ICON opengisch/qfield-sdk:${QFIELD_SDK_VERSION} /usr/src/qfield/scripts/docker-build.sh
+docker run -v${HOME}/.gradle:/root/.gradle -v $(pwd):/usr/src/qfield -e "BUILD_FOLDER=build-${ARCH}" -e ARCH -e STOREPASS -e KEYNAME -e KEYPASS -e "VERSION=${TRAVIS_TAG}" -e PKG_NAME -e APP_NAME -e APP_ICON opengisch/qfield-sdk:${QFIELD_SDK_VERSION} /usr/src/qfield/scripts/docker-build.sh
