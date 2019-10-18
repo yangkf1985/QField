@@ -118,8 +118,15 @@ void QgsQuickCoordinateTransformer::updatePosition()
     qWarning() << exp.what();
   }
 
+  if ( std::isnan( z ) )
+  {
+    z = 0;
+  }
+
   mProjectedPosition = QgsPoint( x, y );
+  qWarning() << "Adding delta z " << z << " + " << mDeltaZ;
   mProjectedPosition.addZValue( z + mDeltaZ );
+  qWarning() << "position " << mProjectedPosition.asWkt();
 
   emit projectedPositionChanged();
 }
@@ -131,6 +138,7 @@ qreal QgsQuickCoordinateTransformer::deltaZ() const
 
 void QgsQuickCoordinateTransformer::setDeltaZ( const qreal& deltaZ )
 {
+  qWarning() << "delta z changed " << deltaZ;
   if ( qgsDoubleNear( mDeltaZ, deltaZ ) )
     return;
 
@@ -139,5 +147,8 @@ void QgsQuickCoordinateTransformer::setDeltaZ( const qreal& deltaZ )
   else
     mDeltaZ = deltaZ;
 
+  qWarning() << "mDelta z changed fo real " << mDeltaZ;
+
   emit deltaZChanged();
+  updatePosition();
 }

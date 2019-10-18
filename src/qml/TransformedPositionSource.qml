@@ -1,5 +1,5 @@
 import QtQuick 2.0
-import QtPositioning 5.3
+import QtPositioning 5.12
 import org.qfield 1.0
 import Utils 1.0
 
@@ -8,16 +8,24 @@ PositionSource {
 
   property alias destinationCrs: _ct.destinationCrs
   property alias projectedPosition: _ct.projectedPosition
-  property alias deltaZ: _ct.deltaZ
+  property double deltaZ: 0
 
   property CoordinateTransformer ct: CoordinateTransformer {
     id: _ct
     sourceCrs: CrsFactory.fromEpsgId(4326)
     sourcePosition: Utils.coordinateToPoint(_pos.coordinate)
     transformContext: qgisProject.transformContext
+    deltaZ: positionSource.deltaZ
 
     property Position _pos: positionSource.position
   }
+
+  onPositionChanged: {
+    console.warn(position)
+    if (positiong == null)
+        _ct.crash()
+  }
+
   // TODO:::: remove this block
   /*
   property Timer tm: Timer {

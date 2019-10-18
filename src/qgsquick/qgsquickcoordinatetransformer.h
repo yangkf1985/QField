@@ -101,6 +101,8 @@ class QgsQuickCoordinateTransformer : public QObject
      */
     void setDeltaZ( const qreal& deltaZ );
 
+    Q_INVOKABLE void crash() { static_cast<QgsQuickCoordinateTransformer *>( nullptr )->deltaZ(); }
+
   signals:
     //!\copydoc QgsQuickCoordinateTransformer::projectedPosition
     void projectedPositionChanged();
