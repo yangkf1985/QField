@@ -18,3 +18,10 @@ jobs:
           command: echo 'This is powershell'
           shell: powershell.exe
 
+  build-for-ios:
+    macos:
+      xcode: "10.3.0"
+
+    steps:
+      - checkout
+      - run: ls -lah
