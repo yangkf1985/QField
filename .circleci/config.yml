@@ -1,0 +1,16 @@
+version: 2.1
+jobs:
+  deploy:
+    macos:
+      xcode: "10.3.0"
+    steps:
+      - checkout
+      - deploy:
+          name: Deploy
+          command: fastlane release_appstore
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - deploy
