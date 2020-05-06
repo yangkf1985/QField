@@ -1,1 +1,1 @@
-*.qml filter=qmlformat
+#*.qml filter=qmlformat
