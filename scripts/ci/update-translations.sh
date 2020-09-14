@@ -24,6 +24,6 @@ if [[ ${CI_BRANCH} = master ]]; then
 fi
 
 # release only if the branch is master
-if [[ ${CI_BRANCH} = trans_test ]]; then
+if [[ ${CI_BRANCH} = trans-test ]]; then
   tx push --source
 fi
