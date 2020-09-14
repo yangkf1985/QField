@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - master
-
+      - trans_test
 jobs:
   translations:
     runs-on: ubuntu-18.04
