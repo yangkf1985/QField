@@ -5,6 +5,12 @@ source ${DIR}/../version_number.sh
 
 lupdate -recursive ${DIR}/../.. -ts ${DIR}/../../i18n/qfield_en.ts
 
+echo === -1 
+echo ${CI_BUILD_DIR}
+echo ${DIR}
+ROOTDIR=${DIR}/../..
+echo $ROOTDIR
+
 echo ==================0
 cat ${CI_BUILD_DIR}/i18n/qfield_en.ts
 echo ==================0
