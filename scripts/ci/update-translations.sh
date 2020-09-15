@@ -8,11 +8,12 @@ ls -l ${CI_BUILD_DIR}/i18n/qfield_bg.ts
 ls -l ${CI_BUILD_DIR}/i18n/qfield_en.qm
 ls -l ${CI_BUILD_DIR}/i18n/qfield_bg.qm
 
+echo == update now
 lupdate -recursive ${DIR}/../.. -ts ${DIR}/../../i18n/qfield_en.ts
 
 echo ==grep Trans-test-ta
-grep Trans-test-ta ${CI_BUILD_DIR}
-grep Trans-test-ta ${DIR}/../..
+grep -Ri Trans-test-ta ${CI_BUILD_DIR}
+grep -Ri Trans-test-ta ${DIR}/../..
 echo ==grep Trans-test-ta
 
 echo === -1 
@@ -25,11 +26,11 @@ ls -l ${CI_BUILD_DIR}/i18n/qfield_en.ts
 ls -l ${CI_BUILD_DIR}/i18n/qfield_bg.ts
 
 echo ==================1
-grep Trans-test-ta ${CI_BUILD_DIR}/i18n/qfield_en.ts
+grep -Ri Trans-test-ta ${CI_BUILD_DIR}/i18n/qfield_en.ts
 echo ==================1
 
 echo ==================2
-grep Trans-test-ta ${CI_BUILD_DIR}/i18n/qfield_bg.ts
+grep -Ri Trans-test-ta ${CI_BUILD_DIR}/i18n/qfield_bg.ts
 echo ==================2
 
 
