@@ -11,7 +11,7 @@ ls -l ${CI_BUILD_DIR}/i18n/qfield_en.qm
 ls -l ${CI_BUILD_DIR}/i18n/qfield_bg.qm
 
 echo == update now
-lupdate-qt5 -recursive ${DIR}/../.. -ts ${DIR}/../../i18n/qfield_en.ts
+lupdate -recursive ${DIR}/../.. -ts ${DIR}/../../i18n/qfield_en.ts
 
 echo ==grep Trans-test-ta
 grep -Ri Trans-test-ta ${CI_BUILD_DIR}
