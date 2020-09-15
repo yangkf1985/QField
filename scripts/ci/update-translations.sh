@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+sudo apt-get install qttools5-dev-tools
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 source ${DIR}/../version_number.sh
