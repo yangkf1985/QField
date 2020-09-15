@@ -11,17 +11,15 @@ echo ${DIR}
 ROOTDIR=${DIR}/../..
 echo $ROOTDIR
 
-echo ==================0
-cat ${CI_BUILD_DIR}/i18n/qfield_en.ts
-echo ==================0
-
 ls -l ${CI_BUILD_DIR}/i18n/qfield_en.ts
+ls -l ${CI_BUILD_DIR}/i18n/qfield_bg.ts
+
 echo ==================1
-grep Changelog ${CI_BUILD_DIR}/i18n/qfield_en.ts
+grep Trans-test-ta ${CI_BUILD_DIR}/i18n/qfield_en.ts
 echo ==================1
 
 echo ==================2
-grep Changelog ${CI_BUILD_DIR}/i18n/qfield_bg.ts
+grep Trans-test-ta ${CI_BUILD_DIR}/i18n/qfield_bg.ts
 echo ==================2
 
 

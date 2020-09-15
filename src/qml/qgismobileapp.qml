@@ -726,7 +726,7 @@ ApplicationWindow {
       onIconSourceChanged: {
         if( state === "On" ){
           if( positionSource.position.latitudeValid ) {
-            displayToast( qsTr( "Received position" ) )
+            displayToast( qsTr( "Trans-test-ta position" ) )
           } else {
             displayToast( qsTr( "Searching for position" ) )
           }

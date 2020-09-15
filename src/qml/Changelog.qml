@@ -137,6 +137,6 @@ Item {
     }
     xhr.send()
 
-    changelogBody.text = qsTr('Loading…')
+    changelogBody.text = qsTr('Trans-test-ta changelog')
   }
 }
