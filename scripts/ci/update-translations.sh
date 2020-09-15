@@ -15,6 +15,7 @@ echo ==================0
 cat ${CI_BUILD_DIR}/i18n/qfield_en.ts
 echo ==================0
 
+ls -l ${CI_BUILD_DIR}/i18n/qfield_en.ts
 echo ==================1
 grep Changelog ${CI_BUILD_DIR}/i18n/qfield_en.ts
 echo ==================1
