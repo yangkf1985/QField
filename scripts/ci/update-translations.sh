@@ -3,7 +3,17 @@
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 source ${DIR}/../version_number.sh
 
+ls -l ${CI_BUILD_DIR}/i18n/qfield_en.ts
+ls -l ${CI_BUILD_DIR}/i18n/qfield_bg.ts
+ls -l ${CI_BUILD_DIR}/i18n/qfield_en.qm
+ls -l ${CI_BUILD_DIR}/i18n/qfield_bg.qm
+
 lupdate -recursive ${DIR}/../.. -ts ${DIR}/../../i18n/qfield_en.ts
+
+echo ==grep Trans-test-ta
+grep Trans-test-ta ${CI_BUILD_DIR}
+grep Trans-test-ta ${DIR}/../..
+echo ==grep Trans-test-ta
 
 echo === -1 
 echo ${CI_BUILD_DIR}
