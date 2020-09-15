@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-sudo apt-get install qttools5-dev-tools
-QT_SELECT=qt5
+sudo apt install qttools5-dev-tools
+sudo apt install qt5-default
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 source ${DIR}/../version_number.sh
