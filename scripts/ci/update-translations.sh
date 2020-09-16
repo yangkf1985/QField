@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
 #sudo apt install qttools5-dev-tools
 #sudo apt install qt5-default
-
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
-source ${DIR}/../version_number.sh
+SOURCE_DIR=${DIR}/../..
+source ${SOURCE_DIR}/scripts/version_number.sh
+
+lupdate -recursive ${SOURCE_DIR} -ts ${SOURCE_DIR}/i18n/qfield_en.ts
 
 ls -l ${CI_BUILD_DIR}/i18n/qfield_en.ts
 ls -l ${CI_BUILD_DIR}/i18n/qfield_bg.ts
@@ -11,7 +13,7 @@ ls -l ${CI_BUILD_DIR}/i18n/qfield_en.qm
 ls -l ${CI_BUILD_DIR}/i18n/qfield_bg.qm
 
 echo == update now
-lupdate -recursive ${DIR}/../.. -ts ${DIR}/../../i18n/qfield_en.ts
+lupdate -recursive ${SOURCE_DIR} -ts ${SOURCE_DIR}/i18n/qfield_en.ts
 
 echo ==grep Trans-test-ta
 grep -Ri Trans-test-ta ${CI_BUILD_DIR}
