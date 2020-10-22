@@ -10,167 +10,27 @@ import Theme 1.0
 Item {
   id: relationCombobox
 
+  Component.onCompleted: {
+    comboBox.currentIndex = featureListModel.findKey(value)
+    comboBox.visible = _relation !== undefined ? _relation.isValid : true
+    searchButton.visible = _relation !== undefined ? _relation.isValid : true
+    addButton.visible = _relation !== undefined ? _relation.isValid : false
+    invalidWarning.visible = _relation !== undefined ? !(_relation.isValid) : false
+  }
+
   anchors {
     left: parent.left
     right: parent.right
     rightMargin: 10
   }
 
-  Popup {
-    id: popup
-
-    signal cancel
-    signal apply
-    signal finished
-
-    parent: ApplicationWindow.overlay
-    x: 24
-    y: 24
-    width: parent.width - 48
-    height: parent.height - 48
-    padding: 0
-    modal: true
-    closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
-    focus: visible
-
-    onClosed: {
-      popup.cancel()
-      popup.finished()
-    }
-
-    Page {
-      anchors.fill: parent
-
-      header: PageHeader {
-        title: qsTr('Related Features')
-        showApplyButton: true
-        showCancelButton: true
-        onApply: {
-          popup.close()
-          popup.apply()
-          popup.finished()
-        }
-        onCancel: {
-          popup.cancel()
-          popup.finished()
-        }
-      }
-
-      TextField {
-        z: 1
-        id: searchField
-        anchors.left: parent.left
-        anchors.right: parent.right
-
-        placeholderText: qsTr("Search…")
-        placeholderTextColor: Theme.mainColor
-
-        leftPadding: 24
-        rightPadding: 24
-        font: Theme.defaultFont
-        selectByMouse: true
-        verticalAlignment: TextInput.AlignVCenter
-
-        inputMethodHints: Qt.ImhNoPredictiveText | Qt.ImhNoAutoUppercase
-
-        onDisplayTextChanged: {
-          featureListModel.searchTerm = searchField.displayText
-        }
-      }
-
-      ScrollView {
-        padding: 20
-
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.top: searchField.bottom
-
-        leftPadding: 0
-        rightPadding: 0
-
-        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
-        ScrollBar.vertical.policy: ScrollBar.AsNeeded
-        contentItem: resultsList
-        contentWidth: resultsList.width
-        contentHeight: resultsList.height
-        clip: true
-
-        ListView {
-          id: resultsList
-          anchors.top: parent.top
-          model: featureListModel
-          width: parent.width
-          height: popup.height - searchField.height - 50
-          clip: true
-
-          delegate: Rectangle {
-            id: delegateRect
-
-            anchors.margins: 10
-            height: radioButton.visible ? radioButton.height : checkBoxButton.height
-            width: parent ? parent.width : undefined
-
-            RadioButton {
-              id: radioButton
-
-              visible: !featureListModel.allowMulti
-              checked: model.checked
-              anchors.verticalCenter: parent.verticalCenter
-              anchors.left: parent.left
-              text: displayString
-              topPadding: 12
-              bottomPadding: 12
-              leftPadding: 24
-              rightPadding: 24
-              ButtonGroup.group: buttonGroup
-            }
-
-            CheckBox {
-              id: checkBoxButton
-
-              visible: featureListModel.allowMulti
-              anchors.verticalCenter: parent.verticalCenter
-              anchors.left: parent.left
-              text: displayString
-              topPadding: 12
-              bottomPadding: 12
-              leftPadding: 24
-              rightPadding: 24
-            }
-
-            /* bottom border */
-            Rectangle {
-              anchors.bottom: parent.bottom
-              height: 1
-              color: "lightGray"
-              width: parent.width
-            }
-
-            MouseArea {
-              anchors.fill: parent
-              propagateComposedEvents: true
-
-              onClicked: {
-                var allowMulti = resultsList.model.allowMulti;
-                var popupRef = popup;
-
-                // after this line, all the references get wrong, that's why we have `popupRef` defined above
-                model.checked = !model.checked
-
-                if (!allowMulti) {
-                  popupRef.close()
-                  popupRef.apply()
-                  popupRef.finished()
-                }
-              }
-            }
-          }
-        }
-      }
-    }
+  property var currentKeyValue: value
+  onCurrentKeyValueChanged: {
+    comboBox._cachedCurrentValue = currentKeyValue
+    comboBox.currentIndex = featureListModel.findKey(currentKeyValue)
   }
 
-  ButtonGroup { id: buttonGroup }
+  height: childrenRect.height + 10
 
   RowLayout {
     anchors { left: parent.left; right: parent.right }
@@ -194,7 +54,7 @@ Item {
       Connections {
         target: featureListModel
 
-        onModelReset: {
+        function onModelReset() {
           comboBox.currentIndex = featureListModel.findKey(comboBox._cachedCurrentValue)
         }
       }
@@ -264,11 +124,12 @@ Item {
       source: Theme.getThemeIcon("ic_baseline_search_black")
       width: 18
       height: 18
+      opacity: enabled ? 1 : 0.3
 
       MouseArea {
         anchors.fill: parent
         onClicked: {
-          popup.open()
+          searchFeaturePopup.open()
         }
       }
     }
@@ -282,6 +143,7 @@ Item {
       source: Theme.getThemeIcon("ic_add_black_48dp")
       width: 18
       height: 18
+      opacity: enabled ? 1 : 0.3
 
       MouseArea {
         anchors.fill: parent
@@ -292,29 +154,185 @@ Item {
         }
       }
     }
+
+    Text {
+      id: invalidWarning
+      visible: false
+      text: qsTr( "Invalid relation")
+      color: Theme.errorColor
+    }
+  }
+
+  EmbeddedFeatureForm{
+      id: addFeaturePopup
+
+      onFeatureSaved: {
+          var referencedValue = addFeaturePopup.attributeFormModel.attribute(relationCombobox._relation.resolveReferencedField(field.name))
+          var index = featureListModel.findKey(referencedValue)
+          if ( index < 0 ) {
+            // model not yet reloaded - keep the value and set it onModelReset
+            comboBox._cachedCurrentValue = referencedValue
+          } else {
+            comboBox.currentIndex = index
+          }
+      }
   }
 
 
-//    Text {
-//      id: invalidWarning
-//      visible: false
-//      text: qsTr( "Invalid relation")
-//      color: Theme.errorColor
-//    }
-//  }
+  Popup {
+    id: searchFeaturePopup
 
-//  EmbeddedFeatureForm{
-//      id: addFeaturePopup
+    signal cancel
+    signal apply
+    signal finished
 
-//      onFeatureSaved: {
-//          var referencedValue = addFeaturePopup.attributeFormModel.attribute(relationCombobox._relation.resolveReferencedField(field.name))
-//          var index = featureListModel.findKey(referencedValue)
-//          if ( index < 0 ) {
-//            // model not yet reloaded - keep the value and set it onModelReset
-//            comboBox._cachedCurrentValue = referencedValue
-//          } else {
-//            comboBox.currentIndex = index
-//          }
-//      }
-//  }
+    parent: ApplicationWindow.overlay
+    x: 24
+    y: 24
+    width: parent.width - 48
+    height: parent.height - 48
+    padding: 0
+    modal: true
+    closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
+    focus: visible
+
+    onClosed: {
+      searchFeaturePopup.cancel()
+      searchFeaturePopup.finished()
+    }
+
+    Page {
+      anchors.fill: parent
+
+      header: PageHeader {
+        title: qsTr('Related Features')
+        showApplyButton: true
+        showCancelButton: true
+        onApply: {
+          searchFeaturePopup.close()
+          searchFeaturePopup.apply()
+          searchFeaturePopup.finished()
+        }
+        onCancel: {
+          searchFeaturePopup.cancel()
+          searchFeaturePopup.finished()
+        }
+      }
+
+      TextField {
+        z: 1
+        id: searchField
+        anchors.left: parent.left
+        anchors.right: parent.right
+
+        placeholderText: qsTr("Search…")
+        placeholderTextColor: Theme.mainColor
+
+        leftPadding: 24
+        rightPadding: 24
+        font: Theme.defaultFont
+        selectByMouse: true
+        verticalAlignment: TextInput.AlignVCenter
+
+        inputMethodHints: Qt.ImhNoPredictiveText | Qt.ImhNoAutoUppercase
+
+        onDisplayTextChanged: {
+          featureListModel.searchTerm = searchField.displayText
+        }
+      }
+
+      ScrollView {
+        padding: 20
+
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.top: searchField.bottom
+
+        leftPadding: 0
+        rightPadding: 0
+
+        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+        ScrollBar.vertical.policy: ScrollBar.AsNeeded
+        contentItem: resultsList
+        contentWidth: resultsList.width
+        contentHeight: resultsList.height
+        clip: true
+
+        ListView {
+          id: resultsList
+          anchors.top: parent.top
+          model: featureListModel
+          width: parent.width
+          height: searchFeaturePopup.height - searchField.height - 50
+          clip: true
+
+          delegate: Rectangle {
+            id: delegateRect
+
+            anchors.margins: 10
+            height: radioButton.visible ? radioButton.height : checkBoxButton.height
+            width: parent ? parent.width : undefined
+
+            RadioButton {
+              id: radioButton
+
+              visible: !featureListModel.allowMulti
+              checked: model.checked
+              anchors.verticalCenter: parent.verticalCenter
+              anchors.left: parent.left
+              text: displayString
+              topPadding: 12
+              bottomPadding: 12
+              leftPadding: 24
+              rightPadding: 24
+              ButtonGroup.group: buttonGroup
+            }
+
+            CheckBox {
+              id: checkBoxButton
+
+              visible: featureListModel.allowMulti
+              anchors.verticalCenter: parent.verticalCenter
+              anchors.left: parent.left
+              text: displayString
+              topPadding: 12
+              bottomPadding: 12
+              leftPadding: 24
+              rightPadding: 24
+            }
+
+            /* bottom border */
+            Rectangle {
+              anchors.bottom: parent.bottom
+              height: 1
+              color: "lightGray"
+              width: parent.width
+            }
+
+            MouseArea {
+              anchors.fill: parent
+              propagateComposedEvents: true
+
+              onClicked: {
+                var allowMulti = resultsList.model.allowMulti;
+                var popupRef = searchFeaturePopup;
+
+                // after this line, all the references get wrong, that's why we have `popupRef` defined above
+                model.checked = !model.checked
+
+                if (!allowMulti) {
+                  popupRef.close()
+                  popupRef.apply()
+                  popupRef.finished()
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  ButtonGroup { id: buttonGroup }
+
 }
