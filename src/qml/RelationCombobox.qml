@@ -9,27 +9,221 @@ import Theme 1.0
 
 Item {
   id: relationCombobox
-
-  Component.onCompleted: {
-    comboBox.currentIndex = featureListModel.findKey(value)
-    comboBox.visible = _relation !== undefined ? _relation.isValid : true
-    addButton.visible = _relation !== undefined ? _relation.isValid : false
-    invalidWarning.visible = _relation !== undefined ? !(_relation.isValid) : false
-  }
-
   anchors {
     left: parent.left
     right: parent.right
     rightMargin: 10
   }
 
-  property var currentKeyValue: value
-  onCurrentKeyValueChanged: {
-    comboBox._cachedCurrentValue = currentKeyValue
-    comboBox.currentIndex = featureListModel.findKey(currentKeyValue)
+  Popup {
+    id: popup
+
+    parent: ApplicationWindow.overlay
+    x: 24
+    y: 24
+    width: parent.width - 48
+    height: parent.height - 48
+    padding: 0
+    modal: true
+    closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
+    focus: visible
+    visible: true
+
+    Page {
+      anchors.fill: parent
+
+      header: PageHeader {
+        title: qsTr('Related Features')
+        showApplyButton: true
+        showCancelButton: false
+        onFinished: popup.visible = false
+      }
+
+      TextField {
+        z: 1
+        id: searchField
+        anchors.left: parent.left
+        anchors.right: parent.right
+
+        placeholderText: qsTr("Search…")
+        placeholderTextColor: Theme.mainColor
+
+        topPadding: 0
+        leftPadding: 24
+        rightPadding: 24
+        bottomPadding: 0
+        font: Theme.defaultFont
+        selectByMouse: true
+        verticalAlignment: TextInput.AlignVCenter
+
+        background: Rectangle {
+          anchors.fill: searchField
+          color: 'lightgreen'
+        }
+
+        inputMethodHints: Qt.ImhNoPredictiveText | Qt.ImhNoAutoUppercase
+
+        onDisplayTextChanged: {
+          featureListModel.searchTerm = searchField.displayText
+        }
+      }
+
+      ScrollView {
+        padding: 20
+
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.top: searchField.bottom
+
+        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+        ScrollBar.vertical.policy: ScrollBar.AsNeeded
+//        contentItem: resultsList
+//        contentWidth: resultsList.width
+//        contentHeight: resultsList.height
+//        clip: true
+
+        ListView {
+          id: resultsList
+          anchors.top: parent.top
+          model: featureListModel
+          width: parent.width
+//            height: resultsList.count > 0
+//                    ? Math.min( delegateRect.height, mainWindow.height / 2 - searchField.height - 10 )
+//                    : 0
+          height: 200
+          clip: true
+
+          delegate: Rectangle {
+            id: delegateRect
+
+//            anchors.top: parent ? parent.bottom : undefined
+            anchors.margins: 10
+            height: textCell.height
+            width: parent ? parent.width : undefined
+
+            Text {
+              id: textCell
+              text: displayString
+              anchors.verticalCenter: parent.verticalCenter
+              anchors.left: parent.left
+              leftPadding: 5
+              font.pointSize: Theme.resultFont.pointSize
+              elide: Text.ElideRight
+              horizontalAlignment: Text.AlignLeft
+            }
+
+            /* bottom border */
+            Rectangle {
+              anchors.bottom: parent.bottom
+              height: 1
+              color: "lightGray"
+              width: parent.width
+            }
+
+            MouseArea {
+              anchors.left: parent.left
+              anchors.top: parent.top
+              anchors.bottom: parent.bottom
+              onClicked: {
+                locator.triggerResultAtRow(index)
+                locatorItem.state = "off"
+              }
+            }
+          }
+        }
+      }
+    }
   }
 
-  height: childrenRect.height + 10
+//  Rectangle {
+//    id: resultsBox
+//    z: 1000000
+//    width: searchField.width - 24
+//    height: searchField.visible && resultsList.count > 0 ? resultsList.height : 0
+//    anchors.top: searchField.top
+//    anchors.left: searchField.left
+//    anchors.topMargin: 24
+//    color: "blue"
+//    visible: searchField.visible && resultsList.count > 0
+//    clip: true
+
+//    Behavior on height {
+//      NumberAnimation { duration: 150; easing.type: Easing.InOutQuad }
+//    }
+
+//    ListView {
+//      id: resultsList
+//      z: 20000000
+//      anchors.top: resultsBox.top
+//      model: featureListModel
+//      width: parent.width
+//      height: resultsList.count > 0 ? Math.min( childrenRect.height, mainWindow.height / 2 - searchField.height - 10 ) : 0
+//      clip: true
+
+//      delegate: Rectangle {
+//        id: delegateRect
+
+//        property bool isGroup: model.ResultFilterGroupSorting === 0
+//        property int resultIndex: index
+
+//        anchors.margins: 10
+//        height: isGroup ? 25 : 40
+//        width: parent.width
+//        visible: model.ResultType !== 0 // remove filter name
+
+//        Text {
+//          id: textCell
+//          text: displayString
+//          anchors.verticalCenter: parent.verticalCenter
+//          anchors.left: parent.left
+//          leftPadding: 5
+//          font.bold: delegateRect.isGroup ? true : false
+//          font.pointSize: Theme.resultFont.pointSize
+//          elide: Text.ElideRight
+//          horizontalAlignment: isGroup ? Text.AlignHCenter : Text.AlignLeft
+//        }
+
+//        /* bottom border */
+//        Rectangle {
+//          anchors.bottom: parent.bottom
+//          height: isGroup ? 0 : 1
+//          color: "lightGray"
+//          width: parent.width
+//        }
+
+//        MouseArea {
+//          anchors.left: parent.left
+//          anchors.top: parent.top
+//          anchors.bottom: parent.bottom
+//          onClicked: {
+//            locator.triggerResultAtRow(index)
+//            locatorItem.state = "off"
+//          }
+//        }
+//      }
+//    }
+//  }
+
+//  Component.onCompleted: {
+//    comboBox.currentIndex = featureListModel.findKey(value)
+//    comboBox.visible = _relation !== undefined ? _relation.isValid : true
+//    addButton.visible = _relation !== undefined ? _relation.isValid : false
+//    invalidWarning.visible = _relation !== undefined ? !(_relation.isValid) : false
+//  }
+
+//  anchors {
+//    left: parent.left
+//    right: parent.right
+//    rightMargin: 10
+//  }
+
+//  property var currentKeyValue: value
+//  onCurrentKeyValueChanged: {
+//    comboBox._cachedCurrentValue = currentKeyValue
+//    comboBox.currentIndex = featureListModel.findKey(currentKeyValue)
+//  }
+
+//  height: childrenRect.height + 10
 
   RowLayout {
     anchors { left: parent.left; right: parent.right }
@@ -114,46 +308,47 @@ Item {
       }
       // [/hidpi fixes]
     }
-
-    Image {
-      Layout.margins: 4
-      Layout.preferredWidth: 18
-      Layout.preferredHeight: 18
-      id: addButton
-      source: Theme.getThemeIcon("ic_add_black_48dp")
-      width: 18
-      height: 18
-
-      MouseArea {
-        anchors.fill: parent
-        onClicked: {
-            addFeaturePopup.state = 'Add'
-            addFeaturePopup.currentLayer = relationCombobox._relation ? relationCombobox._relation.referencedLayer : null
-            addFeaturePopup.open()
-        }
-      }
-    }
-
-    Text {
-      id: invalidWarning
-      visible: false
-      text: qsTr( "Invalid relation")
-      color: Theme.errorColor
-    }
   }
 
-  EmbeddedFeatureForm{
-      id: addFeaturePopup
+//    Image {
+//      Layout.margins: 4
+//      Layout.preferredWidth: 18
+//      Layout.preferredHeight: 18
+//      id: addButton
+//      source: Theme.getThemeIcon("ic_add_black_48dp")
+//      width: 18
+//      height: 18
 
-      onFeatureSaved: {
-          var referencedValue = addFeaturePopup.attributeFormModel.attribute(relationCombobox._relation.resolveReferencedField(field.name))
-          var index = featureListModel.findKey(referencedValue)
-          if ( index < 0 ) {
-            // model not yet reloaded - keep the value and set it onModelReset
-            comboBox._cachedCurrentValue = referencedValue
-          } else {
-            comboBox.currentIndex = index
-          }
-      }
-  }
+//      MouseArea {
+//        anchors.fill: parent
+//        onClicked: {
+//            addFeaturePopup.state = 'Add'
+//            addFeaturePopup.currentLayer = relationCombobox._relation ? relationCombobox._relation.referencedLayer : null
+//            addFeaturePopup.open()
+//        }
+//      }
+//    }
+
+//    Text {
+//      id: invalidWarning
+//      visible: false
+//      text: qsTr( "Invalid relation")
+//      color: Theme.errorColor
+//    }
+//  }
+
+//  EmbeddedFeatureForm{
+//      id: addFeaturePopup
+
+//      onFeatureSaved: {
+//          var referencedValue = addFeaturePopup.attributeFormModel.attribute(relationCombobox._relation.resolveReferencedField(field.name))
+//          var index = featureListModel.findKey(referencedValue)
+//          if ( index < 0 ) {
+//            // model not yet reloaded - keep the value and set it onModelReset
+//            comboBox._cachedCurrentValue = referencedValue
+//          } else {
+//            comboBox.currentIndex = index
+//          }
+//      }
+//  }
 }
