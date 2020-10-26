@@ -32,15 +32,10 @@ Item {
     modal: true
     closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
     focus: visible
-    visible: true
 
-    onCancel: {
-      close()
-      finished()
-    }
-
-    onApply: {
-      finished()
+    onClosed: {
+      popup.cancel()
+      popup.finished()
     }
 
     Page {
@@ -50,8 +45,15 @@ Item {
         title: qsTr('Related Features')
         showApplyButton: true
         showCancelButton: true
-        onApply: popup.apply()
-        onCancel: popup.cancel()
+        onApply: {
+          popup.close()
+          popup.apply()
+          popup.finished()
+        }
+        onCancel: {
+          popup.cancel()
+          popup.finished()
+        }
       }
 
       TextField {
@@ -170,96 +172,6 @@ Item {
 
   ButtonGroup { id: buttonGroup }
 
-//  Rectangle {
-//    id: resultsBox
-//    z: 1000000
-//    width: searchField.width - 24
-//    height: searchField.visible && resultsList.count > 0 ? resultsList.height : 0
-//    anchors.top: searchField.top
-//    anchors.left: searchField.left
-//    anchors.topMargin: 24
-//    color: "blue"
-//    visible: searchField.visible && resultsList.count > 0
-//    clip: true
-
-//    Behavior on height {
-//      NumberAnimation { duration: 150; easing.type: Easing.InOutQuad }
-//    }
-
-//    ListView {
-//      id: resultsList
-//      z: 20000000
-//      anchors.top: resultsBox.top
-//      model: featureListModel
-//      width: parent.width
-//      height: resultsList.count > 0 ? Math.min( childrenRect.height, mainWindow.height / 2 - searchField.height - 10 ) : 0
-//      clip: true
-
-//      delegate: Rectangle {
-//        id: delegateRect
-
-//        property bool isGroup: model.ResultFilterGroupSorting === 0
-//        property int resultIndex: index
-
-//        anchors.margins: 10
-//        height: isGroup ? 25 : 40
-//        width: parent.width
-//        visible: model.ResultType !== 0 // remove filter name
-
-//        Text {
-//          id: textCell
-//          text: displayString
-//          anchors.verticalCenter: parent.verticalCenter
-//          anchors.left: parent.left
-//          leftPadding: 5
-//          font.bold: delegateRect.isGroup ? true : false
-//          font.pointSize: Theme.resultFont.pointSize
-//          elide: Text.ElideRight
-//          horizontalAlignment: isGroup ? Text.AlignHCenter : Text.AlignLeft
-//        }
-
-//        /* bottom border */
-//        Rectangle {
-//          anchors.bottom: parent.bottom
-//          height: isGroup ? 0 : 1
-//          color: "lightGray"
-//          width: parent.width
-//        }
-
-//        MouseArea {
-//          anchors.left: parent.left
-//          anchors.top: parent.top
-//          anchors.bottom: parent.bottom
-//          onClicked: {
-//            locator.triggerResultAtRow(index)
-//            locatorItem.state = "off"
-//          }
-//        }
-//      }
-//    }
-//  }
-
-//  Component.onCompleted: {
-//    comboBox.currentIndex = featureListModel.findKey(value)
-//    comboBox.visible = _relation !== undefined ? _relation.isValid : true
-//    addButton.visible = _relation !== undefined ? _relation.isValid : false
-//    invalidWarning.visible = _relation !== undefined ? !(_relation.isValid) : false
-//  }
-
-//  anchors {
-//    left: parent.left
-//    right: parent.right
-//    rightMargin: 10
-//  }
-
-//  property var currentKeyValue: value
-//  onCurrentKeyValueChanged: {
-//    comboBox._cachedCurrentValue = currentKeyValue
-//    comboBox.currentIndex = featureListModel.findKey(currentKeyValue)
-//  }
-
-//  height: childrenRect.height + 10
-
   RowLayout {
     anchors { left: parent.left; right: parent.right }
 
@@ -311,7 +223,6 @@ Item {
 
       contentItem: Text {
         id: textLabel
-        height: fontMetrics.height + 20
         text: comboBox.displayText
         font: Theme.defaultFont
         horizontalAlignment: Text.AlignLeft
@@ -343,26 +254,46 @@ Item {
       }
       // [/hidpi fixes]
     }
+
+    Image {
+      id: searchButton
+
+      Layout.margins: 4
+      Layout.preferredWidth: 18
+      Layout.preferredHeight: 18
+      source: Theme.getThemeIcon("ic_baseline_search_black")
+      width: 18
+      height: 18
+
+      MouseArea {
+        anchors.fill: parent
+        onClicked: {
+          popup.open()
+        }
+      }
+    }
+
+
+    Image {
+      Layout.margins: 4
+      Layout.preferredWidth: 18
+      Layout.preferredHeight: 18
+      id: addButton
+      source: Theme.getThemeIcon("ic_add_black_48dp")
+      width: 18
+      height: 18
+
+      MouseArea {
+        anchors.fill: parent
+        onClicked: {
+            addFeaturePopup.state = 'Add'
+            addFeaturePopup.currentLayer = relationCombobox._relation ? relationCombobox._relation.referencedLayer : null
+            addFeaturePopup.open()
+        }
+      }
+    }
   }
 
-//    Image {
-//      Layout.margins: 4
-//      Layout.preferredWidth: 18
-//      Layout.preferredHeight: 18
-//      id: addButton
-//      source: Theme.getThemeIcon("ic_add_black_48dp")
-//      width: 18
-//      height: 18
-
-//      MouseArea {
-//        anchors.fill: parent
-//        onClicked: {
-//            addFeaturePopup.state = 'Add'
-//            addFeaturePopup.currentLayer = relationCombobox._relation ? relationCombobox._relation.referencedLayer : null
-//            addFeaturePopup.open()
-//        }
-//      }
-//    }
 
 //    Text {
 //      id: invalidWarning
