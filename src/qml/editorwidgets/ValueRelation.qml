@@ -100,7 +100,7 @@ Item {
 
       Item {
         id: listItem
-        anchors { left: parent.left; right: parent.right }
+        anchors { left: parent ? parent.left : undefined; right: parent ? parent.right : undefined }
 
         focus: true
 
