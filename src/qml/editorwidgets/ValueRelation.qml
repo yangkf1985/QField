@@ -71,6 +71,7 @@ Item {
         addNull: config['AllowNull']
         orderByValue: config['OrderByValue']
         filterExpression: config['FilterExpression']
+        allowMulti: true
         onListUpdated: {
           valueRelation.valueChanged( attributeValue, false )
         }
