@@ -11,6 +11,8 @@ if [[ ${CI_SECURE_ENV_VARS} = true ]]; then
   for x in android/res/values-*_*;do mv $x $(echo $x | sed -e 's/_/-r/') ;done
   
   find ${DIR}/i18n -type f -name "*.ts" -exec lrelease "{}" \;
+  echo checking japanese grep -Ri -B1 -A2 "Show on map canvas" i18n/qfield_ja.ts
+  grep -Ri -B1 -A2 "Show on map canvas" ${DIR}/qfield_ja.ts
 fi
 
 echo "::endgroup::"
